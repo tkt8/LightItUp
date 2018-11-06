@@ -15,7 +15,7 @@ int PWM_OUT = 0;
 void setup() 
 {
 
-   attachInterrupt(BUTTON_IN, button_pushed, FALLING);
+   attachInterrupt(BUTTON_IN, buttonpushed, FALLING);
    // define output (PWM) pin connected to LED
 
 }
@@ -26,8 +26,8 @@ void loop()
 {
 
     CheckForButtonPress();
-    SetPWMBasedOnOperatingMode();
-    ShineLed();
+	ShineLed();
+
 
 }
 
@@ -49,7 +49,7 @@ void   SetPWMBasedOnOperatingMode()
 
 }
 
-void button_pushed() 
+void buttonPushed() 
 {
     BUTTON_PUSHED = true;
 }
@@ -73,6 +73,7 @@ void CheckForButtonPress()
 		{
             operatingMode = 0;
         }
+		SetPWMBasedOnOperatingMode();
     }
 
     BUTTON_PUSHED = false;
