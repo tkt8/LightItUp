@@ -1,0 +1,79 @@
+// use preprocessor directives to define constants in the code
+#define FLASH_RATE_HZ 2
+#define BUTTON_IN D1
+#define PWN_LED_OUT D11
+#define PWM_MAX 255
+
+// global variables representing "state" across all functions
+// operating mode: 0 - off, 1 - bright, 2 - mid-bright, 3 - dim, 4 - flash
+int operatingMode = 0;
+bool BUTTON_PUSHED = false;
+int previousButtonState = 0;
+int PWM_OUT = 0;
+
+// executed one-time at device startup
+void setup() 
+{
+
+   attachInterrupt(BUTTON_IN, button_pushed, FALLING);
+   // define output (PWM) pin connected to LED
+
+}
+
+// continually-running loop
+// calls functions that are named as "actions"
+void loop()
+{
+
+    CheckForButtonPress();
+    SetPWMBasedOnOperatingMode();
+    ShineLed();
+
+}
+
+void   SetPWMBasedOnOperatingMode()
+ {
+
+    switch (operating_mode) {
+        case 0:
+            PWM_OUT = 0;
+        case 1:
+            PWM_OUT = PWM_MAX;
+        case 2:
+            PWN_OUT = int(PWM_MAX/2);
+        case 3:
+            PWN_OUT = int(PWM_MAX/4);
+        case 4:
+            FlashTheLight();
+    }
+
+}
+
+void button_pushed() 
+{
+    BUTTON_PUSHED = true;
+}
+
+void FlashTheLight() 
+{
+
+}
+
+void ShineLed() 
+{
+    analogWrite(PWM_LED_OUT, PWM_OUT);
+}
+
+void CheckForButtonPress() 
+{
+    if (BUTTON_PUSHED == true) 
+	{
+        operatingMode = operatingMode + 1;
+        if (operatingMode == 5) 
+		{
+            operatingMode = 0;
+        }
+    }
+
+    BUTTON_PUSHED = false;
+}
