@@ -1,6 +1,6 @@
-#define FLASH_RATE_HZ 2
+#define FLASH_RATE_HZ 2.0
 #define BUTTON_IN 2
-#define PWM_LED_OUT 3
+#define PWM_LED_OUT 11
 #define PWM_MAX 255
 
 // operating mode: 0 - off, 1 - bright, 2 - mid-bright, 3 - dim, 4 - flash
@@ -11,7 +11,7 @@ int outputPWM = 0;
 
 unsigned long timeNewKeyPress = 0;
 unsigned long timeLastKeyPress = 0;
-unsigned int timeDebounce = 10;
+unsigned int timeDebounce = 500 ;
 
 void setup() 
 {
@@ -34,54 +34,52 @@ void ButtonPushed()
 
 void CheckForButtonPress() 
 {
-  if (buttonIsPushed == true) 
-  {
-        timeLastKeyPress = millis();
-    Serial.print(timeLastKeyPress);
-    Serial.print('\n');
-
-    delay(1000);
-    Serial.print(timeLastKeyPress);
-    Serial.print('\n');
-
-    delay(1000);
-    if( timeLastKeyPress -timeLastKeyPress >= timeDebounce)
+    if (buttonIsPushed == true) 
     {
-      operatingMode = operatingMode + 1;
-      if (operatingMode == 5) 
-      {
-        operatingMode = 0;
-      }
-      timeLastKeyPress = timeNewKeyPress;
-      SetPWMBasedOnOperatingMode();
-          buttonIsPushed = false;
-
-    }
- }
+        timeNewKeyPress = millis();
+         
+        if( timeNewKeyPress-timeLastKeyPress >= timeDebounce)
+          {
+              operatingMode = operatingMode + 1;
+              if (operatingMode == 5) 
+                {
+                  operatingMode = 0;
+                }
+              timeLastKeyPress = timeNewKeyPress;
+              SetPWMBasedOnOperatingMode();
+              buttonIsPushed = false;
+          }
+   }
 }
 
 void   SetPWMBasedOnOperatingMode()
  {
 
-    switch (operatingMode) {
+    switch (operatingMode) 
+    {
         case 0:
             outputPWM = 0;
             ShineLed();
+            break;
 
         case 1:
             outputPWM = PWM_MAX;
             ShineLed();
+            break;
 
         case 2:
             outputPWM = int(PWM_MAX/2);
             ShineLed();
+            break;
 
         case 3:
             outputPWM = int(PWM_MAX/4);
             ShineLed();
-
+            break;
+            
         case 4:
             FlashTheLight();
+            break;
     }
 
 }
@@ -89,18 +87,18 @@ void   SetPWMBasedOnOperatingMode()
 
 void FlashTheLight() 
 {
+  float Ton=(1/FLASH_RATE_HZ)*1000;
   outputPWM = PWM_MAX;
-  delay(1000);
+  ShineLed();
+  delay(Ton);
   
-  outputPWM = PWM_MAX;
-  delay(1000);
+  outputPWM = 0;
+  ShineLed();
+  delay(Ton);
 }
 
 void ShineLed() 
 {
-  Serial.print(operatingMode);
-  Serial.print('\n');
-
-  delay(100);
-  analogWrite(PWM_LED_OUT, outputPWM);
+  
+     analogWrite(PWM_LED_OUT, outputPWM);
 }
